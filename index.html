@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- SHEETS_URL: https://script.google.com/macros/s/AKfycbycNc9uJexYhCmwNOh49gOtQSiQ_F-vWfWJwRUvuD-E72oB5tfBheculry6AmRu4ivo/exec -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -417,6 +418,8 @@
     return ok;
   }
 
+  const SHEETS_URL = "https://script.google.com/macros/s/AKfycbycNc9uJexYhCmwNOh49gOtQSiQ_F-vWfWJwRUvuD-E72oB5tfBheculry6AmRu4ivo/exec";
+
   $('rsvpForm').addEventListener('submit', async e => {
     e.preventDefault();
     if (!validate()) return;
@@ -445,11 +448,30 @@
     };
 
     try {
+      // ── Save to Firebase Rolodex ──────────────────────────────
       await addDoc(collection(db, 'leads'), lead);
+
+      // ── Save to Google Sheets (fire-and-forget) ───────────────
+      fetch(SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:   name,
+          handle: '@' + handle,
+          state:  $('state').value,
+          phone:  $('phone').value.trim(),
+          email:  $('email').value.trim(),
+          gender: gender
+        })
+      }).catch(() => {}); // silent fail — Firebase is primary
+
+      // ── Show success ──────────────────────────────────────────
       $('formCard').classList.add('hide');
       $('successName').textContent = name.split(' ')[0] || 'baddie';
       $('successScreen').classList.add('show');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
     } catch (err) {
       console.error(err);
       btn.disabled = false;
