@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baddie IRL — RSVP</title>
+  <meta name="description" content="Bad Bitches Only — RSVP for the Baddie IRL Mixer.">
+  <meta name="theme-color" content="#FF1493">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bbo: #FF1493;
+      --bbo-light: #FF69B4;
+      --bg: #060606;
+      --surface: #0f0f0f;
+      --surface2: #181818;
+      --border: rgba(255,255,255,0.07);
+      --text: #ffffff;
+      --muted: #666666;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bg-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 45% at 50% -5%, rgba(255,20,147,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 25% at 85% 95%, rgba(255,20,147,0.06) 0%, transparent 60%);
+    }
+
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding-bottom: 80px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      width: 100%;
+      text-align: center;
+      padding: 56px 24px 48px;
+      background: linear-gradient(180deg, rgba(255,20,147,0.13) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(255,20,147,0.1);
+    }
+
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,20,147,0.1);
+      border: 1px solid rgba(255,20,147,0.2);
+      border-radius: 100px; padding: 5px 14px;
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--bbo-light); margin-bottom: 22px;
+    }
+
+    .live-badge .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--bbo); box-shadow: 0 0 6px var(--bbo);
+      animation: blink 1.8s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;}50%{opacity:.25;} }
+
+    .hero h1 {
+      font-size: clamp(40px, 10vw, 64px);
+      font-weight: 900; line-height: 1.0;
+      letter-spacing: -0.04em; margin-bottom: 8px;
+    }
+
+    .hero h1 .pink {
+      background: linear-gradient(135deg, #FF1493, #FF69B4);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 14px; color: var(--muted); margin-top: 10px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── CONTAINER ── */
+    .container {
+      width: 100%; max-width: 460px;
+      padding: 36px 20px 0;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 4px 60px rgba(0,0,0,0.5), 0 0 60px rgba(255,20,147,0.04);
+    }
+
+    /* ── FIELD ── */
+    .field { margin-bottom: 16px; }
+
+    .field label {
+      display: block;
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 7px;
+    }
+
+    .field label .req { color: var(--bbo); }
+
+    .input, .select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 15px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px; font-weight: 500;
+      color: var(--text);
+      outline: none; appearance: none; -webkit-appearance: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input::placeholder { color: #333; }
+
+    .input:focus, .select:focus {
+      border-color: var(--bbo);
+      box-shadow: 0 0 0 3px rgba(255,20,147,0.1);
+    }
+
+    .input.err { border-color: #ff4455 !important; box-shadow: none; }
+
+    /* @ prefix */
+    .pfix { position: relative; }
+    .pfix .sym {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px; font-weight: 800;
+      color: var(--bbo); pointer-events: none;
+    }
+    .pfix .input { padding-left: 26px; }
+
+    /* Select */
+    .sel-wrap { position: relative; }
+    .sel-wrap::after {
+      content: '▾'; position: absolute;
+      right: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+
+    /* Gender pills */
+    .pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill-inp { display: none; }
+    .pill-lbl {
+      padding: 10px 18px; border-radius: 100px;
+      border: 1px solid var(--border);
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .pill-inp:checked + .pill-lbl {
+      border-color: var(--bbo);
+      background: rgba(255,20,147,0.1);
+      color: var(--bbo-light);
+      box-shadow: 0 0 0 2px rgba(255,20,147,0.12);
+    }
+
+    /* Errors */
+    .ferr {
+      font-size: 11px; color: #ff5566;
+      margin-top: 5px; display: none;
+    }
+    .ferr.show { display: block; }
+
+    .divider { height: 1px; background: var(--border); margin: 22px 0; }
+
+    /* ── BUTTON ── */
+    .btn {
+      width: 100%; padding: 16px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+      border: none; color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px; font-weight: 800; letter-spacing: 0.03em;
+      cursor: pointer; position: relative; overflow: hidden;
+      box-shadow: 0 8px 30px rgba(255,20,147,0.32);
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover { opacity: 0.91; box-shadow: 0 12px 40px rgba(255,20,147,0.44); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .shimmer {
+      position: absolute; inset: 0;
+      background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.14) 50%, transparent 65%);
+      background-size: 200% 100%;
+      animation: sh 2.5s infinite;
+    }
+    @keyframes sh { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+    .btn-inner { position: relative; z-index: 1; }
+
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 7px;
+    }
+
+    /* ── SUCCESS ── */
+    .success { display: none; text-align: center; padding: 60px 20px; }
+    .success.show { display: block; }
+    .card.hide { display: none; }
+
+    @keyframes pop {
+      0%{transform:scale(0) rotate(-8deg);opacity:0}
+      100%{transform:scale(1) rotate(0);opacity:1}
+    }
+    .sicon { font-size: 64px; display: inline-block; animation: pop 0.5s cubic-bezier(.175,.885,.32,1.275); margin-bottom: 20px; }
+    .stitle { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .ssub { font-size: 15px; color: var(--muted); line-height: 1.7; }
+    .ssub strong { color: var(--bbo-light); }
+
+    .footer { margin-top: 28px; text-align: center; font-size: 11px; color: #222; }
+
+    @media(max-width:480px){
+      .hero{padding:44px 20px 36px;}
+      .card{padding:22px 18px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="live-badge"><span class="dot"></span>RSVPs Open</div>
+    <h1>Baddie<br><span class="pink">IRL Mixer</span></h1>
+    <p class="hero-sub">Bad Bitches Only · Secure your spot below</p>
+  </div>
+
+  <div class="container">
+
+    <div class="card" id="formCard">
+      <form id="rsvpForm" novalidate>
+
+        <!-- NAME -->
+        <div class="field">
+          <label for="name">Full Name <span class="req">*</span></label>
+          <input class="input" type="text" id="name" placeholder="Your full name" autocomplete="name" required>
+          <div class="ferr" id="nameErr">Please enter your name.</div>
+        </div>
+
+        <!-- INSTAGRAM -->
+        <div class="field">
+          <label for="handle">Instagram Handle <span class="req">*</span></label>
+          <div class="pfix">
+            <span class="sym">@</span>
+            <input class="input" type="text" id="handle" placeholder="yourusername" autocomplete="off" required>
+          </div>
+          <div class="ferr" id="handleErr">Please enter your Instagram handle.</div>
+        </div>
+
+        <!-- STATE -->
+        <div class="field">
+          <label for="state">State <span class="req">*</span></label>
+          <div class="sel-wrap">
+            <select class="select" id="state" required>
+              <option value="" disabled selected>Select your state...</option>
+              <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+              <option>Arkansas</option><option>California</option><option>Colorado</option>
+              <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+              <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+              <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+              <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+              <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+              <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+              <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+              <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+              <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+              <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+              <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+              <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+              <option>Texas</option><option>Utah</option><option>Vermont</option>
+              <option>Virginia</option><option>Washington</option><option>West Virginia</option>
+              <option>Wisconsin</option><option>Wyoming</option><option>Washington D.C.</option>
+              <option>Outside the US</option>
+            </select>
+          </div>
+          <div class="ferr" id="stateErr">Please select your state.</div>
+        </div>
+
+        <!-- PHONE -->
+        <div class="field">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input class="input" type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" required>
+          <div class="ferr" id="phoneErr">Please enter a valid phone number.</div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="field">
+          <label for="email">Email Address <span class="req">*</span></label>
+          <input class="input" type="email" id="email" placeholder="you@email.com" autocomplete="email" required>
+          <div class="ferr" id="emailErr">Please enter a valid email.</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- GENDER -->
+        <div class="field">
+          <label>Gender <span class="req">*</span></label>
+          <div class="pills">
+            <input class="pill-inp" type="radio" name="gender" id="g-woman" value="Woman" required>
+            <label class="pill-lbl" for="g-woman">Woman</label>
+
+            <input class="pill-inp" type="radio" name="gender" id="g-man" value="Man">
+            <label class="pill-lbl" for="g-man">Man</label>
+
+            <input class="pill-inp" type="radio" name="gender" id="g-nb" value="Non-binary">
+            <label class="pill-lbl" for="g-nb">Non-binary</label>
+
+            <input class="pill-inp" type="radio" name="gender" id="g-other" value="Other">
+            <label class="pill-lbl" for="g-other">Other</label>
+          </div>
+          <div class="ferr" id="genderErr">Please select a gender.</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="btn" type="submit" id="submitBtn">
+          <span class="shimmer"></span>
+          <span class="btn-inner" id="btnText">🔥 Secure My Spot</span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="successScreen">
+      <span class="sicon">🔥</span>
+      <h2 class="stitle">You're On The List.</h2>
+      <p class="ssub">
+        We got you, <strong id="successName">baddie</strong>.<br>
+        Details coming to your DMs soon. Stay ready.
+      </p>
+    </div>
+
+    <div class="footer">BAD BITCHES ONLY © 2026 &nbsp;·&nbsp; BADDIE IRL MIXER</div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAyiCa9-NcwVfhOoCeNVBl8HhYd1ZZCZ3Q",
+    authDomain: "bbo-rolodex-77516.firebaseapp.com",
+    projectId: "bbo-rolodex-77516",
+    storageBucket: "bbo-rolodex-77516.firebasestorage.app",
+    messagingSenderId: "131756116847",
+    appId: "1:131756116847:web:3d92b0eac010218fb4369a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  const $   = id => document.getElementById(id);
+
+  function showErr(field, msg) {
+    const e = $(`${field}Err`);
+    if (e) { e.textContent = msg; e.classList.add('show'); }
+    const i = $(field);
+    if (i && i.classList) i.classList.add('err');
+  }
+  function clearErr(field) {
+    const e = $(`${field}Err`); if (e) e.classList.remove('show');
+    const i = $(field); if (i && i.classList) i.classList.remove('err');
+  }
+  function clearAll() {
+    ['name','handle','state','phone','email','gender'].forEach(clearErr);
+  }
+
+  function validate() {
+    clearAll();
+    let ok = true;
+
+    if (!$('name').value.trim())
+      { showErr('name','Please enter your full name.'); ok=false; }
+
+    if (!$('handle').value.trim())
+      { showErr('handle','Please enter your Instagram handle.'); ok=false; }
+
+    if (!$('state').value)
+      { showErr('state','Please select your state.'); ok=false; }
+
+    const ph = $('phone').value.trim();
+    if (!ph || ph.replace(/\D/g,'').length < 7)
+      { showErr('phone','Please enter a valid phone number.'); ok=false; }
+
+    const em = $('email').value.trim();
+    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))
+      { showErr('email','Please enter a valid email.'); ok=false; }
+
+    if (!document.querySelector('input[name="gender"]:checked'))
+      { showErr('gender','Please select a gender.'); ok=false; }
+
+    return ok;
+  }
+
+  $('rsvpForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const btn     = $('submitBtn');
+    const btnText = $('btnText');
+    btn.disabled  = true;
+    btnText.innerHTML = '<span class="spinner"></span>Sending...';
+
+    const name   = $('name').value.trim();
+    const handle = $('handle').value.trim().replace('@','');
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+
+    const lead = {
+      handle:   '@' + handle,
+      name:     name,
+      phone:    $('phone').value.trim(),
+      email:    $('email').value.trim(),
+      state:    $('state').value,
+      gender:   gender,
+      category: 'Event',
+      urgency:  'hot',
+      context:  `Baddie IRL Mixer RSVP — ${name} | State: ${$('state').value} | Gender: ${gender}`,
+      source:   'baddie-irl-signup-form',
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      await addDoc(collection(db, 'leads'), lead);
+      $('formCard').classList.add('hide');
+      $('successName').textContent = name.split(' ')[0] || 'baddie';
+      $('successScreen').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false;
+      btnText.textContent = '🔥 Secure My Spot';
+      alert('Something went wrong. Please try again or DM us @badbitsonly.');
+    }
+  });
+
+  // Live clear-on-type
+  ['name','handle','phone','email'].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener('input', () => clearErr(id));
+  });
+  $('state').addEventListener('change', () => clearErr('state'));
+</script>
+
+</body>
+</html>
