@@ -179,81 +179,46 @@
     }
     .ferr.show { display: block; }
 
+    .sms-consent-block.err {
+      border-color: #ff4455 !important;
+      background: rgba(255, 68, 85, 0.05);
+    }
+
     .divider { height: 1px; background: var(--border); margin: 22px 0; }
 
-    /* SMS CONSENT */
+    /* SMS CONSENT — mandatory */
     .sms-consent-block {
-      background: rgba(255,20,147,0.04);
-      border: 1px solid rgba(255,20,147,0.15);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .sms-optional-tag {
-      display: inline-block;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      background: var(--surface2);
+      margin: 24px 0 32px;
+      padding: 18px;
+      background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 2px 8px;
-      margin-bottom: 10px;
-    }
-
-    .sms-consent-label {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      cursor: pointer;
-    }
-
-    .sms-consent-label input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      min-width: 20px;
-      border: 2px solid rgba(255,20,147,0.4);
-      border-radius: 5px;
-      background: var(--surface2);
-      cursor: pointer;
-      margin-top: 1px;
-      transition: background 0.15s, border-color 0.15s;
+      border-radius: var(--radius);
       position: relative;
-      flex-shrink: 0;
     }
-
-    .sms-consent-label input[type="checkbox"]:checked {
-      background: var(--bbo);
-      border-color: var(--bbo);
+    .sms-required-tag {
+      position: absolute; top: -10px; right: 12px;
+      background: var(--surface2); border: 1px solid var(--bbo);
+      padding: 2px 10px; border-radius: 100px;
+      font-size: 9px; font-weight: 800; color: var(--bbo-light);
+      text-transform: uppercase; letter-spacing: 0.1em;
     }
-
-    .sms-consent-label input[type="checkbox"]:checked::after {
-      content: '';
-      position: absolute;
-      left: 4px; top: 1px;
-      width: 6px; height: 10px;
-      border: 2px solid #fff;
-      border-top: none; border-left: none;
-      transform: rotate(45deg);
+    .sms-consent-label { display: flex; gap: 12px; cursor: pointer; align-items: flex-start; }
+    .sms-consent-label input {
+      width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px;
+      background: var(--surface2); appearance: none; -webkit-appearance: none;
+      cursor: pointer; flex-shrink: 0; margin-top: 2px; transition: all 0.2s;
+      position: relative;
     }
-
-    .sms-consent-text {
-      font-size: 12px;
-      line-height: 1.65;
-      color: #999;
+    .sms-consent-label input:checked { background: var(--bbo); border-color: var(--bbo); }
+    .sms-consent-label input:checked::after {
+      content: '✓'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 14px; font-weight: 900;
     }
+    .sms-consent-text { font-size: 11px; line-height: 1.65; color: #999; }
+    .sms-consent-text strong { color: var(--bbo-light); font-weight: 700; }
 
-    .sms-consent-text strong {
-      color: var(--bbo-light);
-      font-weight: 700;
-    }
-
-    /* BUTTON */
+    /* ── BUTTON ── */
     .btn {
       width: 100%; padding: 16px;
       border-radius: 13px;
@@ -409,20 +374,21 @@
 
         <div class="divider"></div>
 
-        <!-- SMS CONSENT — unchecked by default, optional -->
-        <div class="sms-consent-block">
-          <span class="sms-optional-tag">Optional</span>
+        <!-- SMS CONSENT — mandatory -->
+        <div class="sms-consent-block" id="smsBlock">
+          <span class="sms-required-tag">Required</span>
           <label class="sms-consent-label" for="smsConsent">
-            <input type="checkbox" id="smsConsent" name="smsConsent" value="yes">
+            <input type="checkbox" id="smsConsent" name="smsConsent" value="yes" required>
             <span class="sms-consent-text">
               I agree to receive event updates, reminders, and promotional messages from
               <strong>Bad Bitches Only (BBO)</strong> via SMS/text message to the phone number
               provided above. Message frequency may vary. Message and data rates may apply.
-              Consent is not required to RSVP or attend.
+              Consent is REQUIRED to RSVP and attend.
               Reply <strong>STOP</strong> to unsubscribe at any time.
               Reply <strong>HELP</strong> for assistance.
             </span>
           </label>
+          <div class="ferr" id="smsErr">You must agree to receive SMS updates to RSVP.</div>
         </div>
 
         <button class="btn" type="submit" id="submitBtn">
@@ -476,7 +442,7 @@
     const i = $(field); if (i && i.classList) i.classList.remove('err');
   }
   function clearAll() {
-    ['name','handle','state','phone','email','gender'].forEach(clearErr);
+    ['name','handle','state','phone','email','gender','sms'].forEach(clearErr);
   }
 
   function validate() {
@@ -503,7 +469,22 @@
     if (!document.querySelector('input[name="gender"]:checked'))
       { showErr('gender','Please select a gender.'); ok=false; }
 
+    if (!$('smsConsent').checked) {
+      $('smsBlock').classList.add('err');
+      $('smsErr').classList.add('show');
+      ok = false;
+    }
+
     return ok;
+  }
+
+  function clearErr(field) {
+    const e = $(`${field}Err`); if (e) e.classList.remove('show');
+    const i = $(field); if (i && i.classList) i.classList.remove('err');
+    if (field === 'sms') {
+      $('smsBlock').classList.remove('err');
+      $('smsErr').classList.remove('show');
+    }
   }
 
   const SHEETS_URL = "https://script.google.com/macros/s/AKfycbw_9IMfkLo4TRilDC_6jHh_kqHyBBJauNWhXBbtlkmXezpHpGfihKGHD15VRSYc0jm8/exec";
@@ -576,6 +557,7 @@
     if (el) el.addEventListener('input', () => clearErr(id));
   });
   $('state').addEventListener('change', () => clearErr('state'));
+  $('smsConsent').addEventListener('change', () => clearErr('sms'));
 </script>
 
 </body>
