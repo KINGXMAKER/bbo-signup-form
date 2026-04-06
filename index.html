@@ -179,10 +179,13 @@
     }
     .ferr.show { display: block; }
 
-    .sms-consent-block.err {
-      border-color: #ff4455 !important;
-      background: rgba(255, 68, 85, 0.05);
+    .field-subtext {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #666;
+      margin-top: 6px;
     }
+    .field-subtext strong { color: var(--bbo-light); }
 
     .divider { height: 1px; background: var(--border); margin: 22px 0; }
 
@@ -339,9 +342,13 @@
 
         <!-- PHONE -->
         <div class="field">
-          <label for="phone">Phone Number</label>
+          <label for="phone">Direct Text Access (Recommended)</label>
           <input class="input" type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel">
-          <div class="ferr" id="phoneErr">Please enter a valid phone number.</div>
+          <p class="field-subtext">
+            We use text for secret location drops and last-minute event updates. 
+            <strong>Highly recommended</strong> so you don't miss the VIP entrance.
+          </p>
+          <div class="ferr" id="phoneErr">Please provide a valid phone number for live updates.</div>
         </div>
 
         <!-- EMAIL -->
