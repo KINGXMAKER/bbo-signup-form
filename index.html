@@ -339,8 +339,8 @@
 
         <!-- PHONE -->
         <div class="field">
-          <label for="phone">Phone Number <span class="req">*</span></label>
-          <input class="input" type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" required>
+          <label for="phone">Phone Number</label>
+          <input class="input" type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel">
           <div class="ferr" id="phoneErr">Please enter a valid phone number.</div>
         </div>
 
@@ -374,21 +374,31 @@
 
         <div class="divider"></div>
 
-        <!-- SMS CONSENT — mandatory -->
-        <div class="sms-consent-block" id="smsBlock">
-          <span class="sms-required-tag">Required</span>
-          <label class="sms-consent-label" for="smsConsent">
-            <input type="checkbox" id="smsConsent" name="smsConsent" value="yes" required>
+        <!-- SMS CONSENT — CLICK-SEND COMPLIANCE -->
+        <div class="sms-consent-block" id="eventSmsBlock">
+          <label class="sms-consent-label" for="eventSmsConsent">
+            <input type="checkbox" id="eventSmsConsent" name="eventSmsConsent" value="yes">
             <span class="sms-consent-text">
-              I agree to receive event updates, reminders, and promotional messages from
-              <strong>Bad Bitches Only (BBO)</strong> via SMS/text message to the phone number
-              provided above. Message frequency may vary. Message and data rates may apply.
-              Consent is REQUIRED to RSVP and attend.
-              Reply <strong>STOP</strong> to unsubscribe at any time.
-              Reply <strong>HELP</strong> for assistance.
+              By checking this box, I agree to receive SMS text messages from 
+              <strong>Bad Bitches Only (BBO)</strong> about my RSVP, event updates, 
+              confirmations, reminders, and important event information. 
+              Message frequency varies. Message and data rates may apply. 
+              Reply <strong>STOP</strong> to unsubscribe. Reply <strong>HELP</strong> for help.
             </span>
           </label>
-          <div class="ferr" id="smsErr">You must agree to receive SMS updates to RSVP.</div>
+        </div>
+
+        <div class="sms-consent-block" id="marketingSmsBlock">
+          <label class="sms-consent-label" for="marketingSmsConsent">
+            <input type="checkbox" id="marketingSmsConsent" name="marketingSmsConsent" value="yes">
+            <span class="sms-consent-text">
+              By checking this box, I agree to receive promotional and marketing SMS text messages 
+              from <strong>Bad Bitches Only (BBO)</strong>, including offers, announcements, 
+              drops, and future event promotions. Message frequency varies. 
+              Message and data rates may apply. Reply <strong>STOP</strong> to unsubscribe. 
+              Reply <strong>HELP</strong> for help.
+            </span>
+          </label>
         </div>
 
         <button class="btn" type="submit" id="submitBtn">
@@ -437,12 +447,8 @@
     const i = $(field);
     if (i && i.classList) i.classList.add('err');
   }
-  function clearErr(field) {
-    const e = $(`${field}Err`); if (e) e.classList.remove('show');
-    const i = $(field); if (i && i.classList) i.classList.remove('err');
-  }
   function clearAll() {
-    ['name','handle','state','phone','email','gender','sms'].forEach(clearErr);
+    ['name','handle','state','phone','email','gender','eventSms','marketingSms'].forEach(clearErr);
   }
 
   function validate() {
@@ -459,19 +465,19 @@
       { showErr('state','Please select your state.'); ok=false; }
 
     const ph = $('phone').value.trim();
-    if (!ph || ph.replace(/\D/g,'').length < 7)
-      { showErr('phone','Please enter a valid phone number.'); ok=false; }
+    if (ph && ph.replace(/\D/g,'').length < 7) {
+      showErr('phone','Please enter a valid phone number.');
+      ok = false;
+    }
 
     const em = $('email').value.trim();
-    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))
-      { showErr('email','Please enter a valid email.'); ok=false; }
+    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+      showErr('email','Please enter a valid email.');
+      ok = false;
+    }
 
-    if (!document.querySelector('input[name="gender"]:checked'))
-      { showErr('gender','Please select a gender.'); ok=false; }
-
-    if (!$('smsConsent').checked) {
-      $('smsBlock').classList.add('err');
-      $('smsErr').classList.add('show');
+    if (!document.querySelector('input[name="gender"]:checked')) {
+      showErr('gender','Please select a gender.'); 
       ok = false;
     }
 
@@ -481,9 +487,8 @@
   function clearErr(field) {
     const e = $(`${field}Err`); if (e) e.classList.remove('show');
     const i = $(field); if (i && i.classList) i.classList.remove('err');
-    if (field === 'sms') {
-      $('smsBlock').classList.remove('err');
-      $('smsErr').classList.remove('show');
+    if (field === 'eventSms' || field === 'marketingSms') {
+      $(`${field}Block`).classList.remove('err');
     }
   }
 
@@ -501,7 +506,8 @@
     const name       = $('name').value.trim();
     const handle     = $('handle').value.trim().replace('@','');
     const gender     = document.querySelector('input[name="gender"]:checked').value;
-    const smsConsent = $('smsConsent').checked ? 'yes' : 'no';
+    const eventSms   = $('eventSmsConsent').checked ? 'yes' : 'no';
+    const marketingSms = $('marketingSmsConsent').checked ? 'yes' : 'no';
 
     const lead = {
       handle:      '@' + handle,
@@ -510,10 +516,11 @@
       email:       $('email').value.trim(),
       state:       $('state').value,
       gender:      gender,
-      sms_consent: smsConsent,
+      event_sms:   eventSms,
+      marketing_sms: marketingSms,
       category:    'Event',
       urgency:     'hot',
-      context:     `Baddie IRL Mixer RSVP — ${name} | State: ${$('state').value} | Gender: ${gender} | SMS Consent: ${smsConsent}`,
+      context:     `Baddie IRL Mixer RSVP — ${name} | State: ${$('state').value} | Gender: ${gender} | Event SMS: ${eventSms} | Marketing SMS: ${marketingSms}`,
       source:      'baddie-irl-signup-form',
       created_at:  new Date().toISOString()
     };
@@ -533,7 +540,8 @@
           phone:       $('phone').value.trim(),
           email:       $('email').value.trim(),
           gender:      gender,
-          sms_consent: smsConsent
+          event_sms:   eventSms,
+          marketing_sms: marketingSms
         })
       }).catch(() => {}); // silent fail — Firebase is primary
 
@@ -557,7 +565,8 @@
     if (el) el.addEventListener('input', () => clearErr(id));
   });
   $('state').addEventListener('change', () => clearErr('state'));
-  $('smsConsent').addEventListener('change', () => clearErr('sms'));
+  $('eventSmsConsent').addEventListener('change', () => clearErr('eventSms'));
+  $('marketingSmsConsent').addEventListener('change', () => clearErr('marketingSms'));
 </script>
 
 </body>
